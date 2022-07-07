@@ -83,9 +83,9 @@ color_index = 40
 
 for image_type in os.listdir("./images"):
 
-    ascii_c = 67
+    ascii_c = 3
     while True:
-        if ws[f"{chr(ascii_c)}{num+1}"].value is None:
+        if ws.cell(row=num, column=ascii_c).value is None:
             break
         
         else:
@@ -94,15 +94,15 @@ for image_type in os.listdir("./images"):
     for image in os.listdir(f"./images/{image_type}"):
         
         get_error(f"./images/{image_type}/{image}")
-        ws[f'{chr(ascii_c)}{num}'] = str(image)
+        ws.cell(row=num, column=ascii_c).value = str(image)
         color = Color(indexed=color_index) 
         paint_cell = PatternFill(patternType='solid', fgColor=color)
-        ws[f'{chr(ascii_c)}{num}'].fill = paint_cell
-        ws[f'{chr(ascii_c)}{num-1}'] = image_type
+        ws.cell(row=num, column=ascii_c).fill = paint_cell
+        ws.cell(row=num-1, column=ascii_c).value = image_type
 
         for x in range(4):
-            ws[f'{chr(ascii_c)}{num+1+x}'] = error_list_psnr[x]
-            ws[f'{chr(ascii_c)}{num+6+x}'] = error_list_ssim[x]
+            ws.cell(row=num+1+x, column=ascii_c).value = error_list_psnr[x]
+            ws.cell(row=num+6+x, column=ascii_c).value = error_list_ssim[x]
             
         shutil.move(f"./images/{image_type}/{image}", f"./saved_images/{image_type}/{image}")
 
