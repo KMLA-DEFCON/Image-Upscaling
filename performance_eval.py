@@ -5,7 +5,7 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Color
 
-wb = load_workbook(filename = "./ex.xlsx")
+wb = load_workbook(filename = "./template.xlsx")
 ws = wb.active
 
 
@@ -94,7 +94,7 @@ for image_type in os.listdir("./images"):
 
         for x in range(4):
             ws[f'{chr(ascii_c)}{num+1+x}'] = error_list_psnr[x]
-            ws[f'{chr(ascii_c)}{num+5+x}'] = error_list_ssim[x]
+            ws[f'{chr(ascii_c)}{num+6+x}'] = error_list_ssim[x]
  
         ascii_c+=1
 
@@ -102,4 +102,4 @@ for image_type in os.listdir("./images"):
     ascii_c+=1
         
 
-wb.save("copy.xlsx")
+wb.save("result.xlsx")
