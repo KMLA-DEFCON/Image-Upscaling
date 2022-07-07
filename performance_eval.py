@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 import os, shutil
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from openpyxl import load_workbook
