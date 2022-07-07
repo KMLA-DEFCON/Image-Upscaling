@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
-import os
+import os, shutil
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Color
 
-wb = load_workbook(filename = "./template.xlsx")
+wb = load_workbook(filename = "./result.xlsx")
 ws = wb.active
 
 
@@ -81,10 +81,19 @@ interpolation_methods = ["Nearest Neighbor",
 
 num = 2
 color_index = 40
-ascii_c = 67
-for image_type in os.listdir("./images"):
-    for image in os.listdir(f"./images/{image_type}"):
 
+for image_type in os.listdir("./images"):
+
+    ascii_c = 67
+    while True:
+        if ws[f"{chr(ascii_c)}{num+1}"].value is None:
+            break
+        
+        else:
+            ascii_c +=1
+
+    for image in os.listdir(f"./images/{image_type}"):
+        
         get_error(f"./images/{image_type}/{image}")
         ws[f'{chr(ascii_c)}{num}'] = str(image)
         color = Color(indexed=color_index) 
@@ -95,11 +104,12 @@ for image_type in os.listdir("./images"):
         for x in range(4):
             ws[f'{chr(ascii_c)}{num+1+x}'] = error_list_psnr[x]
             ws[f'{chr(ascii_c)}{num+6+x}'] = error_list_ssim[x]
- 
+            
+        shutil.move(f"./images/{image_type}/{image}", f"./saved_images/{image_type}/{image}")
+
         ascii_c+=1
 
     color_index+=1
-    ascii_c+=1
+    num += 13
         
-
 wb.save("result.xlsx")
