@@ -27,7 +27,7 @@ def read_image(path):
 
     return img, size, dimension
 
-def image_change_scale(img, dimension, scale=100, interpolation=cv2.INTER_CUBIC):
+def image_change_scale(img, dimension, scale=100, interpolation=cv2.INTER_LINEAR):
     scale /= 100
     new_dimension = (int(dimension[1]*scale), int(dimension[0]*scale))
     resized_img = cv2.resize(img, new_dimension, interpolation=interpolation)
@@ -80,12 +80,12 @@ def main():
     images_list = {}
 
     # Read Image
-    img, size, dimension = read_image("./image.png")
+    img, size, dimension = read_image("./breakfast.png")
     print(f"Image size is: {size}")
     images_list['Original Image'] = img
 
     # Change Image Size
-    scale_percent = 25  # percent of original image size
+    scale_percent = 20 # percent of original image size
     image_scale = scale_percent
     resized_img = image_change_scale(img, dimension, scale_percent)
     print(f"Smalled Image size is: {resized_img.shape}")

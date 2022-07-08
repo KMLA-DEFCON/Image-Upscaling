@@ -7,7 +7,6 @@ from openpyxl.styles import PatternFill, Color
 wb = load_workbook(filename = "./result.xlsx")
 ws = wb.active
 
-
 image_scale = 0
 error_list_psnr = []
 error_list_ssim = []
@@ -21,7 +20,7 @@ def read_image(path):
 
     return img, size, dimension
 
-def image_change_scale(img, dimension, scale=100, interpolation=cv2.INTER_CUBIC):
+def image_change_scale(img, dimension, scale=100, interpolation=cv2.INTER_LINEAR):
     scale /= 100
     new_dimension = (int(dimension[1]*scale), int(dimension[0]*scale))
     resized_img = cv2.resize(img, new_dimension, interpolation=interpolation)
@@ -38,7 +37,7 @@ def get_error(image_file):
     images_list['Original Image'] = img
 
     # Change Image Size
-    scale_percent = 25  # percent of original image size
+    scale_percent = 15 # percent of original image size
     image_scale = scale_percent
     resized_img = image_change_scale(img, dimension, scale_percent)
     images_list['Smalled Image'] = resized_img
@@ -75,11 +74,10 @@ def get_error(image_file):
     error_list_ssim.append(structural_similarity(cubic_img, img, channel_axis=2))
     error_list_ssim.append(structural_similarity(czos_img, img, channel_axis=2)) 
 
-interpolation_methods = ["Nearest Neighbor",
-                             "Bilinear", "Cubiclinear", "Lanczos"]
-
+interpolation_methods = ["Nearest Neighbor", "Bilinear", "Cubiclinear", "Lanczos"]
 num = 2
 color_index = 40
+
 
 for image_type in os.listdir("./images"):
 
@@ -98,7 +96,7 @@ for image_type in os.listdir("./images"):
         color = Color(indexed=color_index) 
         paint_cell = PatternFill(patternType='solid', fgColor=color)
         ws.cell(row=num, column=ascii_c).fill = paint_cell
-        ws.cell(row=num-1, column=ascii_c).value = image_type
+        ws.cell(row=num-1, column=ascii_c).value = f"{image_type} / {image_scale}"
 
         for x in range(4):
             ws.cell(row=num+1+x, column=ascii_c).value = error_list_psnr[x]
