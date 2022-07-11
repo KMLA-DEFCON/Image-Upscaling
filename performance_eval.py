@@ -1,7 +1,4 @@
-from distutils.log import error
-import cv2
-import os, shutil
-import numpy as np
+import cv2, os, shutil
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Color
@@ -38,7 +35,7 @@ def get_error(image_file):
     images_list['Original Image'] = img
 
     # Change Image Size
-    scale_percent = 15 # percent of original image size
+    scale_percent = 20 # percent of original image size
     image_scale = scale_percent
     resized_img = image_change_scale(img, dimension, scale_percent)
     images_list['Smalled Image'] = resized_img
