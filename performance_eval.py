@@ -1,5 +1,7 @@
+from distutils.log import error
 import cv2
 import os, shutil
+import numpy as np
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Color
@@ -13,8 +15,7 @@ error_list_ssim = []
 
 def read_image(path):
 
-    img = cv2.imread(path)
-    
+    img = cv2.imread(path)    
     size = img.shape
     dimension = (size[0], size[1])
 
@@ -90,8 +91,9 @@ for image_type in os.listdir("./images"):
             ascii_c +=1
 
     for image in os.listdir(f"./images/{image_type}"):
-        
+
         get_error(f"./images/{image_type}/{image}")
+
         ws.cell(row=num, column=ascii_c).value = str(image)
         color = Color(indexed=color_index) 
         paint_cell = PatternFill(patternType='solid', fgColor=color)
@@ -100,7 +102,20 @@ for image_type in os.listdir("./images"):
 
         for x in range(4):
             ws.cell(row=num+1+x, column=ascii_c).value = error_list_psnr[x]
+
+            if error_list_psnr[x] == max(error_list_psnr):
+                ws.cell(row=num+1+x, column=ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=3))
+            
+            elif error_list_psnr[x] == min(error_list_psnr):
+                ws.cell(row=num+1+x, column = ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=2))
+
             ws.cell(row=num+6+x, column=ascii_c).value = error_list_ssim[x]
+
+            if error_list_ssim[x] == max(error_list_ssim):
+                ws.cell(row=num+6+x, column=ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=3))
+            
+            elif error_list_ssim[x] == min(error_list_ssim):
+                ws.cell(row=num+6+x, column = ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=2))
             
         shutil.move(f"./images/{image_type}/{image}", f"./saved_images/{image_type}/{image}")
 

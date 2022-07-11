@@ -80,7 +80,7 @@ def main():
     images_list = {}
 
     # Read Image
-    img, size, dimension = read_image("./dog.png")
+    img, size, dimension = read_image("./image.png")
     print(f"Image size is: {size}")
     images_list['Original Image'] = img
 
