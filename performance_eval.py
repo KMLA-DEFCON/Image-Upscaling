@@ -2,13 +2,15 @@ import cv2, os, shutil
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Color
+from vif_utils import vif
 
-wb = load_workbook(filename = "./result.xlsx")
+wb = load_workbook(filename = "./template.xlsx")
 ws = wb.active
 
 image_scale = 0
 error_list_psnr = []
 error_list_ssim = []
+error_list_vif = []
 
 def read_image(path):
 
@@ -25,17 +27,18 @@ def image_change_scale(img, dimension, scale=100, interpolation=cv2.INTER_LINEAR
     return resized_img
 
 def get_error(image_file):
-    global image_scale, error_list_psnr, error_list_ssim
+    global image_scale, error_list_psnr, error_list_ssim, error_list_vif
     images_list = {}
     error_list_psnr = []
     error_list_ssim = []
+    error_list_vif = []
 
     # Read Image
     img, size, dimension = read_image(image_file)
     images_list['Original Image'] = img
 
     # Change Image Size
-    scale_percent = 20 # percent of original image size
+    scale_percent = 17 # percent of original image size
     image_scale = scale_percent
     resized_img = image_change_scale(img, dimension, scale_percent)
     images_list['Smalled Image'] = resized_img
@@ -71,6 +74,11 @@ def get_error(image_file):
     error_list_ssim.append(structural_similarity(bil_img, img, channel_axis=2))
     error_list_ssim.append(structural_similarity(cubic_img, img, channel_axis=2))
     error_list_ssim.append(structural_similarity(czos_img, img, channel_axis=2)) 
+
+    error_list_vif.append(vif(nn_img, img))
+    error_list_vif.append(vif(bil_img, img))
+    error_list_vif.append(vif(cubic_img, img))
+    error_list_vif.append(vif(czos_img, img))
 
 interpolation_methods = ["Nearest Neighbor", "Bilinear", "Cubiclinear", "Lanczos"]
 num = 2
@@ -113,6 +121,15 @@ for image_type in os.listdir("./images"):
             
             elif error_list_ssim[x] == min(error_list_ssim):
                 ws.cell(row=num+6+x, column = ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=2))
+
+            ws.cell(row=num+11+x, column=ascii_c).value = error_list_vif[x]
+
+            if error_list_vif[x] == max(error_list_vif):
+                ws.cell(row=num+11+x, column=ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=3))
+            
+            elif error_list_vif[x] == min(error_list_vif):
+                ws.cell(row=num+11+x, column = ascii_c).fill = PatternFill(patternType='solid', fgColor=Color(indexed=2))
+
             
         shutil.move(f"./images/{image_type}/{image}", f"./saved_images/{image_type}/{image}")
 
